@@ -84,10 +84,6 @@ class loginUI():
         question = self.combobox_question.get()
         customquest = self.entry_customquest.get()
         answer = self.entry_answer.get()
-
-        print(
-            username, passwd, combobox_question_index(question), answer,
-            combobox_username_index(lgt), customquest)
         res = spider.sp.login(username, passwd, combobox_question_index(question), answer,
                               combobox_username_index(lgt), customquest)
         messagebox.showinfo("提示: ", res)
