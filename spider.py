@@ -44,7 +44,7 @@ class spider():
 
     # 根据 url 返回 html
     def get_html(self, url):
-        config.logger.info("请求地址 url= %s", url)
+        config.logger.info("请求地址 url= %s", os.path.join(config.URL, url))
         resp = requests.get(os.path.join(config.URL, url), headers=config.headers)
         return etree.HTML(resp.content.decode())
 
@@ -97,6 +97,7 @@ class spider():
             except Exception as err:
                 config.logger.error('下载第 %s 页发生异常, err= {%s}', p, err)
 
+    # 下载 fid 的 page 页面
     def download_page(self, fid, page, dir='.'):
         for one in self.get_page(fid, page):
             try:
@@ -108,6 +109,17 @@ class spider():
                     self.download(os.path.join(config.URL, v), filename[k], dir)
             except Exception as err:
                 config.logger.error('下载 fid= %s, 第 %s 页发生异常, err= {%s}', fid, page, err)
+
+    # 获取 fid 的页数
+    def get_last_page(self, fid):
+        config.logger.info("获取 fid= %s, 页数", fid)
+        num = 0
+        try:
+            str_list = self.get_by_xpath('thread.php?fid-{}.html'.format(fid), '//span[@class="pagesone"]/span/text()')
+            num = int(str_list[0].replace('Pages: 1/', ''))
+        except Exception as err:
+            config.logger.error('获取 fid= %s, 页数失败', fid, err)
+        return num
 
 
 sp = spider()
