@@ -8,3 +8,4 @@ headers = {
 }
 
 MAX_WORKERS = 16
+DOWNLOAD_DIR = 'download'
