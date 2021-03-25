@@ -90,14 +90,24 @@ class spider():
         for p in range(start_page, end_page + 1):
             config.logger.info('正在下载第 %s 页', p)
             try:
-                for one in self.get_page(fid, p):
-                    download_url, filename = self.get_torrent(one)
-                    for k, v in enumerate(download_url):
-                        config.logger.info("{%s} 页面发现种子: {%s}", v, filename[k])
-                        # 需要处理 获得 url 地址为绝对地址
-                        self.download(os.path.join(config.URL, v), filename[k], dir)
+                # 单线程下载
+                # self.download_page(fid, p, dir)
+                # 多线程下载
+                self.pool.submit(self.download_page, fid, p, dir)
             except Exception as err:
                 config.logger.error('下载第 %s 页发生异常, err= {%s}', p, err)
+
+    def download_page(self, fid, page, dir='.'):
+        for one in self.get_page(fid, page):
+            try:
+                download_url, filename = self.get_torrent(one)
+                for k, v in enumerate(download_url):
+                    config.logger.info("{%s} 页面发现种子: {%s}", v, filename[k])
+                    # 需要处理 获得 url 地址为绝对地址
+                    # 下载就不要开启多线程了
+                    self.download(os.path.join(config.URL, v), filename[k], dir)
+            except Exception as err:
+                config.logger.error('下载 fid= %s, 第 %s 页发生异常, err= {%s}', fid, page, err)
 
 
 sp = spider()
